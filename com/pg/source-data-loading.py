@@ -46,6 +46,6 @@ if __name__ == '__main__':
         .load()
 
     txnDF.show()
-    txnDF.write.format("parquet").save("s3a://test-vasu-test/staging")
+    txnDF.write.format("parquet").save("s3a://test-vasu-test/staging/SB")
 
 # spark-submit --packages "mysql:mysql-connector-java:8.0.15" com/pg/source-data-loading.py
