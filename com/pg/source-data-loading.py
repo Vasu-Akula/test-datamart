@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
 import yaml
 import os.path
 import utils.aws_utils as ut
@@ -43,9 +44,18 @@ if __name__ == '__main__':
         .read.format("jdbc")\
         .option("driver", "com.mysql.cj.jdbc.Driver")\
         .options(**jdbc_params)\
-        .load()
+        .load()\
+        .withColumn('ins_date', current_date())
 
+    # add the current date to the above df and then you write it
     txnDF.show()
-    txnDF.write.format("parquet").save("s3a://test-vasu-test/staging/SB")
+    txnDF\
+        .write\
+        .partitionBy('ins_date')\
+        .format("parquet")\
+        .save("s3a://test-vasu-test/staging/SB")
+
+    # put the code here to pull rewards data from SFTP server and write it to s3
+
 
 # spark-submit --packages "mysql:mysql-connector-java:8.0.15" com/pg/source-data-loading.py
