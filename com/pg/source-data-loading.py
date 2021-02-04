@@ -14,7 +14,6 @@ if __name__ == '__main__':
     spark = SparkSession \
         .builder \
         .appName("Read ingestion enterprise applications") \
-        .master('local[*]') \
         .getOrCreate()
     spark.sparkContext.setLogLevel('ERROR')
 
@@ -27,46 +26,54 @@ if __name__ == '__main__':
     secret = open(app_secrets_path)
     app_secret = yaml.load(secret, Loader=yaml.FullLoader)
 
-    jdbc_params = {"url": ut.get_mysql_jdbc_url(app_secret),
-                  "lowerBound": "1",
-                  "upperBound": "100",
-                  "dbtable": app_conf["mysql_conf"]["dbtable"],
-                  "numPartitions": "2",
-                  "partitionColumn": app_conf["mysql_conf"]["partition_column"],
-                  "user": app_secret["mysql_conf"]["username"],
-                  "password": app_secret["mysql_conf"]["password"]
-                   }
-    # print(jdbcParams)
+    src_list = app_conf['source_list']
+    for src in src_list:
+        if src == 'SB':
+            jdbc_params = {"url": ut.get_mysql_jdbc_url(app_secret),
+                          "lowerBound": "1",
+                          "upperBound": "100",
+                          "dbtable": app_conf["mysql_conf"]["dbtable"],
+                          "numPartitions": "2",
+                          "partitionColumn": app_conf["mysql_conf"]["partition_column"],
+                          "user": app_secret["mysql_conf"]["username"],
+                          "password": app_secret["mysql_conf"]["password"]
+                           }
+            # print(jdbcParams)
 
-    # use the ** operator/un-packer to treat a python dictionary as **kwargs
-    print("\nReading data from MySQL DB using SparkSession.read.format(),")
-    txnDF = spark\
-        .read.format("jdbc")\
-        .option("driver", "com.mysql.cj.jdbc.Driver")\
-        .options(**jdbc_params)\
-        .load()\
-        .withColumn('ins_date', current_date())
+            # use the ** operator/un-packer to treat a python dictionary as **kwargs
+            print("\nReading data from MySQL DB using SparkSession.read.format(),")
+            txnDF = spark\
+                .read.format("jdbc")\
+                .option("driver", "com.mysql.cj.jdbc.Driver")\
+                .options(**jdbc_params)\
+                .load()\
+                .withColumn('ins_date', current_date())
 
-    # add the current date to the above df and then you write it
-    txnDF.show()
-    txnDF\
-        .write\
-        .partitionBy('ins_date')\
-        .format("parquet")\
-        #   .save("s3a://test-vasu-test/staging/SB")
+            # add the current date to the above df and then you write it
+            txnDF.show()
+            txnDF\
+                .write\
+                .partitionBy('ins_date')\
+                .format("parquet")\
+                .save("s3a://test-vasu-test/staging/SB")
+        elif src == 'OL':
+            # put the code here to pull rewards data from SFTP server and write it to s3
+            ol_txn_df = spark.read \
+                .format("com.springml.spark.sftp") \
+                .option("host", app_secret["sftp_conf"]["hostname"]) \
+                .option("port", app_secret["sftp_conf"]["port"]) \
+                .option("username", app_secret["sftp_conf"]["username"]) \
+                .option("pem", os.path.abspath(current_dir + "/../../" + app_secret["sftp_conf"]["pem"])) \
+                .option("fileType", "csv") \
+                .option("delimiter", "|") \
+                .load(app_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")\
+                .withColumn('ins_date', current_date())
 
-    # put the code here to pull rewards data from SFTP server and write it to s3
-    ol_txn_df = spark.read \
-        .format("com.springml.spark.sftp") \
-        .option("host", app_secret["sftp_conf"]["hostname"]) \
-        .option("port", app_secret["sftp_conf"]["port"]) \
-        .option("username", app_secret["sftp_conf"]["username"]) \
-        .option("pem", os.path.abspath(current_dir + "/../../" + app_secret["sftp_conf"]["pem"])) \
-        .option("fileType", "csv") \
-        .option("delimiter", "|") \
-        .load(app_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")\
-        .withColumn('ins_date', current_date())
+            ol_txn_df.show()
+            ol_txn_df \
+                .write \
+                .partitionBy('ins_date') \
+                .format("parquet") \
+                .save("s3a://test-vasu-test/staging/OL")
 
-    ol_txn_df.show()
-
-# spark-submit --packages "mysql:mysql-connector-java:8.0.15" com/pg/source-data-loading.py
+# spark-submit --packages "mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/pg/source-data-loading.py

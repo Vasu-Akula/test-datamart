@@ -1,3 +1,7 @@
+source_list:
+  - SB
+  - OL
+
 s3_conf:
   s3_bucket: test-vasu-test
 
