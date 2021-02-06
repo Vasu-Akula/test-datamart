@@ -28,13 +28,14 @@ if __name__ == '__main__':
 
     src_list = app_conf['source_list']
     for src in src_list:
+        src_conf = app_conf[src]
         if src == 'SB':
             jdbc_params = {"url": ut.get_mysql_jdbc_url(app_secret),
                           "lowerBound": "1",
                           "upperBound": "100",
-                          "dbtable": app_conf["mysql_conf"]["dbtable"],
+                          "dbtable": src_conf["mysql_conf"]["dbtable"],
                           "numPartitions": "2",
-                          "partitionColumn": app_conf["mysql_conf"]["partition_column"],
+                          "partitionColumn": src_conf["mysql_conf"]["partition_column"],
                           "user": app_secret["mysql_conf"]["username"],
                           "password": app_secret["mysql_conf"]["password"]
                            }
@@ -55,7 +56,7 @@ if __name__ == '__main__':
                 .write\
                 .partitionBy('ins_date')\
                 .format("parquet")\
-                .save("s3a://test-vasu-test/staging/SB")
+                .save("s3a://test-vasu-test/staging/" + src)
         elif src == 'OL':
             # put the code here to pull rewards data from SFTP server and write it to s3
             ol_txn_df = spark.read \
@@ -66,7 +67,7 @@ if __name__ == '__main__':
                 .option("pem", os.path.abspath(current_dir + "/../../" + app_secret["sftp_conf"]["pem"])) \
                 .option("fileType", "csv") \
                 .option("delimiter", "|") \
-                .load(app_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")\
+                .load(src_conf["sftp_conf"]["directory"] + "/receipts_delta_GBR_14_10_2017.csv")\
                 .withColumn('ins_date', current_date())
 
             ol_txn_df.show()
@@ -74,6 +75,6 @@ if __name__ == '__main__':
                 .write \
                 .partitionBy('ins_date') \
                 .format("parquet") \
-                .save("s3a://test-vasu-test/staging/OL")
+                .save("s3a://test-vasu-test/staging/" + src)
 
 # spark-submit --packages "mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/pg/source-data-loading.py
