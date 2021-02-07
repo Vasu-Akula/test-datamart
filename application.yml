@@ -1,6 +1,7 @@
 source_list:
   - SB
   - OL
+  - ADDR
 
 s3_conf:
   s3_bucket: test-vasu-test
@@ -18,9 +19,10 @@ SB:
     partition_column: App_Transaction_Id
     query : "(select * from testdb.TRANSACTIONSYNC where Internal_Member_Id = 'PC7135361') as t"
 
-mongodb_config:
-  database: school
-  collection: students
+ADDR:
+  mongodb_config:
+    database: customers
+    collection: address
 
 redshift_conf:
   filetype: csv
