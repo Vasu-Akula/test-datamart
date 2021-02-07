@@ -2,6 +2,7 @@ source_list:
   - SB
   - OL
   - ADDR
+  - CP
 
 s3_conf:
   s3_bucket: test-vasu-test
@@ -24,11 +25,8 @@ ADDR:
     database: customers
     collection: address
 
-redshift_conf:
-  filetype: csv
-  delimiter: |
-  dbtable: PUBLIC.TXN_FCT
-  query: SELECT txn_id, create_time, amount, cust_id from PUBLIC.TXN_FCT
+CP:
+  filename: KC_Extract_1_20171009.csv
 
 spark_sql_demo:
   agg_demo: >

@@ -97,4 +97,13 @@ if __name__ == '__main__':
                 .format("parquet") \
                 .save("s3a://test-vasu-test/staging/" + src)
 
+        elif src == 'CP':
+            cp_df = spark.read \
+                .option('header', 'true') \
+                .option('delimiter', '|') \
+                .csv("s3a://" + app_conf["s3_conf"]["s3_bucket"] + '/' + src_conf["filename"])
+
+            cp_df.show(5, False)
+
+
 # spark-submit --packages "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/pg/source-data-loading.py
