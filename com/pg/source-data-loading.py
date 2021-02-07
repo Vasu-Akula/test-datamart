@@ -84,7 +84,10 @@ if __name__ == '__main__':
 
             cust_addr = cust_addr.select(cust_addr['consumer_id'],
                              cust_addr['mobile-no'].alias('mobile-no'),
-                             cust_addr['address.street'].alias('street'))
+                             cust_addr['address.street'].alias('street'),
+                             cust_addr['address.city'].alias('city'),
+                             cust_addr['address.state'].alias('state'),
+                             current_date().alias('ins_date'))
 
 
             cust_addr.show()
