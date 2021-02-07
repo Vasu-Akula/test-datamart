@@ -82,9 +82,9 @@ if __name__ == '__main__':
                 .option("collection", src_conf["mongodb_config"]["collection"]) \
                 .load()
 
-            cust_addr = cust_addr.select(cust_addr('consumer_id'),
-                             cust_addr('mobile-no').alias('mobile-no'),
-                             cust_addr('address.street').alias('street'))
+            cust_addr = cust_addr.select(cust_addr['consumer_id'],
+                             cust_addr['mobile-no'].alias('mobile-no'),
+                             cust_addr['address.street'].alias('street'))
 
 
             cust_addr.show()
