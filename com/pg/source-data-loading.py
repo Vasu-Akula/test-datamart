@@ -73,14 +73,20 @@ if __name__ == '__main__':
                 .partitionBy('ins_date') \
                 .format("parquet") \
                 .save("s3a://test-vasu-test/staging/" + src)
+
         elif src == 'ADDR':
-            students = spark \
+            cust_addr = spark \
                 .read \
                 .format("com.mongodb.spark.sql.DefaultSource") \
                 .option("database", src_conf["mongodb_config"]["database"]) \
                 .option("collection", src_conf["mongodb_config"]["collection"]) \
                 .load()
 
-            students.show()
+            cust_addr.select(cust_addr('consumer_id'),
+                             cust_addr('mobile-no').alias('mobile-no'),
+                             cust_addr('address.street').alias('street'))
+
+
+            cust_addr.show()
 
 # spark-submit --packages "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/pg/source-data-loading.py
