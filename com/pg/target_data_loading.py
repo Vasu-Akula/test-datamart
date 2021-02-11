@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
 
     def fn_uuid():
-        uid = uuid.uuid4()
+        uid = uuid.uuid1()
         return str(uid)
 
     fn_uuid = spark.udf.register("fn_uuid", fn_uuid, StringType())
