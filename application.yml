@@ -31,7 +31,7 @@ ADDR:
 CP:
   filename: KC_Extract_1_20171009.csv
 
-REGIS_DEMO:
+REGIS_DIM:
   source_data: CP
   loading_query: >
     SELECT
