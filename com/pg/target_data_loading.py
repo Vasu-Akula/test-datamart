@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType
 from pyspark.sql.functions import *
+import uuid
 import yaml
 import os.path
 import utils.aws_utils as ut
@@ -23,6 +25,12 @@ if __name__ == '__main__':
         .getOrCreate()
     spark.sparkContext.setLogLevel('ERROR')
 
+
+    def fn_uuid:
+        uid = uuid.uuid4()
+        return str(uid)
+
+    fn_uuid = spark.udf.register("fn_uuid", fn_uuid, StringType())
     tgt_list = app_conf['target_list']
 
     for tgt in tgt_list:
