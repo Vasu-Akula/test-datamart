@@ -31,6 +31,7 @@ if __name__ == '__main__':
         if tgt == 'REGIS_DIM':
             cp_df = spark.read.parquet(stg_loc + "/" + tgt_conf["source_data"])
             cp_df.createOrReplaceTempView(tgt_conf["source_data"])
+            cp_df.show()
             regis_dim_df = spark.sql(tgt_conf["loading_query"])
             regis_dim_df.show(5, False)
 
