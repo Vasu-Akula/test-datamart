@@ -23,8 +23,19 @@ if __name__ == '__main__':
         .getOrCreate()
     spark.sparkContext.setLogLevel('ERROR')
 
-    tgt_list = app_conf['source_list']
+    tgt_list = app_conf['target_list']
+
     for tgt in tgt_list:
         tgt_conf = app_conf[tgt]
+        stg_loc = "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"]
         if tgt == 'REGIS_DIM':
-            regis_dm_df =
+            cp_df = spark.read.parquet(stg_loc + "/" + tgt_conf["source_data"])
+            cp_df.createOrReplaceTempView(tgt_conf["source_data"])
+            regis_dim_df = spark.sql(tgt_conf["loading_query"])
+            regis_dim_df.show(5, False)
+
+
+
+
+
+spark-submit --master yarn --packages "org.apache.hadoop:hadoop-aws:2.7.4" com/pg/target_data_loading.py
