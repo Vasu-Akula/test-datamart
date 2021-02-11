@@ -26,7 +26,7 @@ if __name__ == '__main__':
     spark.sparkContext.setLogLevel('ERROR')
 
 
-    def fn_uuid:
+    def fn_uuid():
         uid = uuid.uuid4()
         return str(uid)
 
