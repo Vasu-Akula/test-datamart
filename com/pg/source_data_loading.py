@@ -26,6 +26,7 @@ if __name__ == '__main__':
     src_list = app_conf['source_list']
     for src in src_list:
         src_conf = app_conf[src]
+        src_loc = "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"] + "/" + src
         if src == 'SB':
             jdbc_params = {"url": ut.get_mysql_jdbc_url(app_secret),
                           "lowerBound": "1",
@@ -53,7 +54,8 @@ if __name__ == '__main__':
                 .write.mode("append")\
                 .partitionBy('ins_date')\
                 .format("parquet")\
-                .save("s3a://test-vasu-test/staging/" + src)
+                .save(src_loc)
+
         elif src == 'OL':
             # put the code here to pull rewards data from SFTP server and write it to s3
             ol_txn_df = spark.read \
@@ -72,7 +74,7 @@ if __name__ == '__main__':
                 .write.mode("append") \
                 .partitionBy('ins_date') \
                 .format("parquet") \
-                .save("s3a://test-vasu-test/staging/" + src)
+                .save(src_loc)
 
         elif src == 'ADDR':
             cust_addr = spark \
@@ -95,7 +97,7 @@ if __name__ == '__main__':
                 .write.mode("append") \
                 .partitionBy('ins_date') \
                 .format("parquet") \
-                .save("s3a://test-vasu-test/staging/" + src)
+                .save(src_loc)
 
         elif src == 'CP':
             cp_df = spark.read \
@@ -108,10 +110,12 @@ if __name__ == '__main__':
                 .write.mode("append") \
                 .partitionBy('ins_date') \
                 .format("parquet") \
-                .save("s3a://test-vasu-test/staging/" + src)
+                .save(src_loc)
 
 
             cp_df.show(5, False)
 
 
-# spark-submit --packages "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/pg/source-data-loading.py
+
+
+# spark-submit --packages "org.mongodb.spark:mongo-spark-connector_2.11:2.4.1,mysql:mysql-connector-java:8.0.15,com.springml:spark-sftp_2.11:1.1.1" com/pg/source_data_loading.py
