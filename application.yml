@@ -55,9 +55,9 @@ CHILD_DIM:
       fn_uuid() AS CHILD_KEY, REGIS_CNSM_ID AS CNSM_ID, REGIS_CTY_CODE AS CITY_CODE, CHILD_ID, CHILD_NB, CHILD_GENDER, ins_date
     FROM
       (SELECT DISTINCT REGIS_CNSM_ID, REGIS_CTY_CODE, CHILD_ID, CHILD_NB, CHILD_GENDER, ins_date
-        FROM
+      FROM
           CP
-        WHERE
+      WHERE
           ins_date = CURRENT_DATE
           AND CHILD_ID IS NOT NULL
       ) CP
