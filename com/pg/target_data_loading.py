@@ -62,4 +62,4 @@ if __name__ == '__main__':
 
 
 
-# spark-submit --master yarn --packages "org.apache.hadoop:hadoop-aws:2.7.4" com/pg/target_data_loading.py
+# spark-submit --jars "https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.36.1060/RedshiftJDBC42-no-awssdk-1.2.36.1060.jar" --master yarn --packages "org.apache.spark:spark-avro_2.11:2.4.2,io.github.spark-redshift-community:spark-redshift_2.11:4.0.1,org.apache.hadoop:hadoop-aws:2.7.4" com/pg/target_data_loading.py
