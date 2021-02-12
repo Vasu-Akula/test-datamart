@@ -51,11 +51,11 @@ if __name__ == '__main__':
             regis_dim_df.show(5, False)
             ut.write_into_redshift(regis_dim_df, app_secret, app_conf, "PUBLIC.REGIS_DIM")
         elif tgt == 'CHILD_DIM':
-            cp_df = spark.read.parquet(stg_loc + "/" + tgt_conf["source_data"])
+            cp_df = spark.read.parquet(stg_loc + "/" + tgt_conf["source_data"]).coalesce(1)
             cp_df.printSchema()
             cp_df.createOrReplaceTempView(tgt_conf["source_data"])
 
-            child_dim_df = spark.sql(tgt_conf["loading_query"])
+            child_dim_df = spark.sql(tgt_conf["loading_query"]).coalesce(1)
             child_dim_df.show(5, False)
             ut.write_into_redshift(child_dim_df, app_secret, app_conf, "PUBLIC.CHILD_DIM")
 

@@ -22,5 +22,5 @@ def write_into_redshift(dim_df, app_secret, app_conf, tablename):
         .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
         .option("forward_spark_s3_credentials", "true") \
         .option("dbtable", tablename) \
-        .mode("overwrite") \
+        .mode("overwrite")\
         .save()
