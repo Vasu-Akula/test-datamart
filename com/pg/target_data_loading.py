@@ -47,7 +47,6 @@ if __name__ == '__main__':
             cp_df = spark.read.parquet(stg_loc + "/" + tgt_conf["source_data"])
             cp_df.printSchema()
             cp_df.createOrReplaceTempView(tgt_conf["source_data"])
-            cp_df.show()
             child_dim_df = spark.sql(tgt_conf["loading_query"])
             child_dim_df.show(5, False)
 
