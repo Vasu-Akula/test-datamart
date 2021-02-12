@@ -6,7 +6,7 @@ source_list:
 
 target_list:
   - REGIS_DIM
-#  - CHILD_DIM
+  - CHILD_DIM
 
 s3_conf:
   s3_bucket: test-vasu-test
