@@ -38,11 +38,18 @@ if __name__ == '__main__':
         stg_loc = "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/" + app_conf["s3_conf"]["staging_dir"]
         if tgt == 'REGIS_DIM':
             cp_df = spark.read.parquet(stg_loc + "/" + tgt_conf["source_data"])
+            cp_df.printSchema()
             cp_df.createOrReplaceTempView(tgt_conf["source_data"])
             cp_df.show()
             regis_dim_df = spark.sql(tgt_conf["loading_query"])
             regis_dim_df.show(5, False)
-
+        elif tgt == 'CHILD_DIM':
+            cp_df = spark.read.parquet(stg_loc + "/" + tgt_conf["source_data"])
+            cp_df.printSchema()
+            cp_df.createOrReplaceTempView(tgt_conf["source_data"])
+            cp_df.show()
+            child_dim_df = spark.sql(tgt_conf["loading_query"])
+            child_dim_df.show(5, False)
 
 
 
