@@ -59,14 +59,14 @@ if __name__ == '__main__':
             child_dim_df.show(5, False)
             ut.write_into_redshift(child_dim_df, app_secret, app_conf, "PUBLIC.CHILD_DIM")
 
-        elif tgt == 'RTL_TXN_FACT':
-            src_data = app_conf['RTL_TXN_FACT']['source_data']
+        elif tgt == 'RTL_TXN_FCT':
+            src_data = app_conf['RTL_TXN_FCT']['source_data']
             for src in src_data:
                 src_conf = app_conf[src]
                 src_df = spark.read.parquet(stg_loc + "/" + src)
                 src_df.show()
                 src_df.createOrReplaceTempView(src)
-            src_table = app_conf['RTL_TXN_FACT']['source_table']
+            src_table = app_conf['RTL_TXN_FCT']['source_table']
             jdbc_url = ut.get_redshift_jdbc_url(app_secret)
             txn_df = spark.read\
                 .format("io.github.spark_redshift_community.spark.redshift")\
@@ -77,6 +77,10 @@ if __name__ == '__main__':
                 .load()
 
             txn_df.show(5, False)
+            txn_df.createOrReplaceTempView("REGIS_DIM")
+
+            rtl_txn_fct_df = spark.sql(app_conf['RTL_TXN_FCT']['loading_query']).coalesce(1)
+            rtl_txn_fct_df.show(5, False)
 
 
 

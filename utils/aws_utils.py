@@ -1,4 +1,3 @@
-
 def get_redshift_jdbc_url(redshift_config: dict):
     host = redshift_config["redshift_conf"]["host"]
     port = redshift_config["redshift_conf"]["port"]

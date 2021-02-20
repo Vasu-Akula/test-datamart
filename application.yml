@@ -7,7 +7,7 @@ source_list:
 target_list:
   - REGIS_DIM
   - CHILD_DIM
-  - RTL_TXN_FACT
+  - RTL_TXN_FCT
 
 s3_conf:
   s3_bucket: test-vasu-test
@@ -69,7 +69,7 @@ CHILD_DIM:
           AND CHILD_ID IS NOT NULL
       ) CP
 
-RTL_TXN_FACT:
+RTL_TXN_FCT:
   source_data:
     - OL
     - SB
