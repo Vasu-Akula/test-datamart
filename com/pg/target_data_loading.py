@@ -81,6 +81,7 @@ if __name__ == '__main__':
 
             rtl_txn_fct_df = spark.sql(app_conf['RTL_TXN_FCT']['loading_query']).coalesce(1)
             rtl_txn_fct_df.show(5, False)
+            ut.write_into_redshift(rtl_txn_fct_df, app_secret, app_conf, "PUBLIC.RTL_TN_FCT")
 
 
 
