@@ -15,7 +15,7 @@ def get_mysql_jdbc_url(mysql_config: dict):
 
 def write_into_redshift(dim_df, app_secret, app_conf, tablename):
     jdbc_url = get_redshift_jdbc_url(app_secret)
-    dim_df.write \
+    dim_df.coalesce(1).write \
         .format("io.github.spark_redshift_community.spark.redshift") \
         .option("url", jdbc_url) \
         .option("tempdir", "s3a://" + app_conf["s3_conf"]["s3_bucket"] + "/temp") \
